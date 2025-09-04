@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Globe</title>
+    <!-- CSS 파일 링크 -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="scene">
+        <div class="globe" id="globe">
+            <div class="face front"></div>
+            <div class="face back"></div>
+        </div>
+    </div>
+
+    <script>
+        const globe = document.getElementById('globe');
+        let isDragging = false;
+        let previousX = 0;
+        let previousY = 0;
+        let rotationX = 0;
+        let rotationY = 0;
+
+        globe.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            previousX = e.clientX;
+            previousY = e.clientY;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+
+            const deltaX = e.clientX - previousX;
+            const deltaY = e.clientY - previousY;
+
+            rotationY += deltaX * 0.5; // 마우스 이동에 따라 Y축 회전
+            rotationX -= deltaY * 0.5; // 마우스 이동에 따라 X축 회전
+
+            globe.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
+
+            previousX = e.clientX;
+            previousY = e.clientY;
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+    </script>
+</body>
+</html>

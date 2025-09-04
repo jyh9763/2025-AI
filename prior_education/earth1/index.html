@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인터랙티브 3D 지구본</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- 3D 효과를 적용하기 위한 전체 장면(Scene) 컨테이너 -->
+    <div class="scene">
+        <!-- 마우스 드래그에 따라 이 요소가 회전합니다 -->
+        <div class="globe">
+            <!-- 지구본의 앞면 -->
+            <div class="face front"></div>
+            <!-- 지구본의 뒷면 (앞면을 180도 돌려놓은 상태) -->
+            <div class="face back"></div>
+        </div>
+    </div>
+
+    <!-- 장식용 지구본 축 -->
+    <div class="axis"></div>
+    <div class="stand"></div>
+
+
+    <script>
+        // --- JavaScript 코드 시작 ---
+        // 이 코드는 마우스 움직임에 따라 지구본을 회전시키는 역할을 합니다.
+
+        // 필요한 HTML 요소들을 가져옵니다.
+        const scene = document.querySelector('.scene');
+        const globe = document.querySelector('.globe');
+
+        let isDragging = false; // 마우스를 누르고 있는지 여부
+        let previousMousePosition = { x: 0, y: 0 }; // 이전 마우스 위치
+        let rotation = { x: -23.5, y: 0 }; // 초기 회전 각도 (지구 자전축 기울기 -23.5도 적용)
+
+        // 초기 각도를 지구본에 적용합니다.
+        globe.style.transform = `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`;
+
+        // 마우스를 눌렀을 때 실행되는 함수
+        const onMouseDown = (e) => {
+            isDragging = true;
+            previousMousePosition.x = e.clientX;
+            previousMousePosition.y = e.clientY;
+            scene.style.cursor = 'grabbing'; // 커서 모양을 '잡는 중'으로 변경
+        };
+
+        // 마우스를 뗐을 때 실행되는 함수
+        const onMouseUp = () => {
+            isDragging = false;
+            scene.style.cursor = 'grab'; // 커서 모양을 '잡을 수 있음'으로 변경
+        };
+
+        // 마우스를 움직일 때 실행되는 함수
+        const onMouseMove = (e) => {
+            if (!isDragging) return; // 마우스를 누른 상태가 아니면 아무것도 하지 않음
+
+            // 현재 마우스 위치와 이전 위치의 차이를 계산합니다.
+            const deltaX = e.clientX - previousMousePosition.x;
+            const deltaY = e.clientY - previousMousePosition.y;
+
+            // 마우스 좌우 움직임(deltaX)은 Y축 회전에,
+            // 마우스 상하 움직임(deltaY)은 X축 회전에 영향을 줍니다.
+            rotation.y += deltaX * 0.3; // 숫자를 조절해 회전 감도를 바꿀 수 있습니다.
+            rotation.x -= deltaY * 0.3;
+
+            // X축 회전 각도를 -90도에서 90도 사이로 제한합니다.
+            // (지구본이 위아래로 뒤집히는 것을 방지)
+            rotation.x = Math.max(-90, Math.min(90, rotation.x));
+
+            // 계산된 회전 각도를 지구본 스타일에 적용합니다.
+            globe.style.transform = `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`;
+
+            // 현재 마우스 위치를 다음 계산을 위해 저장합니다.
+            previousMousePosition.x = e.clientX;
+            previousMousePosition.y = e.clientY;
+        };
+
+        // 마우스 이벤트 리스너를 등록합니다.
+        scene.addEventListener('mousedown', onMouseDown);
+        window.addEventListener('mouseup', onMouseUp); // 창 전체에서 마우스를 떼도 인식하도록 window에 등록
+        window.addEventListener('mousemove', onMouseMove); // 창 전체에서 마우스를 움직여도 인식하도록 window에 등록
+
+        // 초기 커서 모양 설정
+        scene.style.cursor = 'grab';
+
+    </script>
+</body>
+</html>
